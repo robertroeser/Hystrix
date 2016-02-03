@@ -31,18 +31,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
+
 public class HystrixTest {
     @Before
     public void reset() {
         Hystrix.reset();
     }
 
-    @Test
+    @Test(timeout = 2000L)
     public void testNotInThread() {
         assertNull(Hystrix.getCurrentThreadExecutingCommand());
     }
 
-    @Test
+    @Test(timeout = 2000L)
       public void testInsideHystrixThreadViaExecute() {
 
         assertNull(Hystrix.getCurrentThreadExecutingCommand());
@@ -65,7 +66,7 @@ public class HystrixTest {
         assertEquals(0, Hystrix.getCommandCount());
     }
 
-    @Test
+    @Test(timeout = 2000L)
     public void testInsideHystrixThreadViaObserve() {
 
         assertNull(Hystrix.getCurrentThreadExecutingCommand());
@@ -124,7 +125,7 @@ public class HystrixTest {
         assertEquals(0, Hystrix.getCommandCount());
     }
 
-    @Test
+    @Test(timeout = 2000L)
     public void testInsideNestedHystrixThread() {
 
         HystrixCommand<Boolean> command = new HystrixCommand<Boolean>(Setter
@@ -171,7 +172,7 @@ public class HystrixTest {
         assertNull(Hystrix.getCurrentThreadExecutingCommand());
     }
 
-    @Test
+    @Test(timeout = 2000L)
     public void testInsideHystrixSemaphoreExecute() {
 
         HystrixCommand<Boolean> command = new HystrixCommand<Boolean>(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("TestUtil"))
@@ -195,7 +196,7 @@ public class HystrixTest {
         assertNull(Hystrix.getCurrentThreadExecutingCommand());
     }
 
-    @Test
+    @Test(timeout = 2000L)
     public void testInsideHystrixSemaphoreQueue() throws Exception {
 
         HystrixCommand<Boolean> command = new HystrixCommand<Boolean>(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("TestUtil"))
@@ -219,7 +220,7 @@ public class HystrixTest {
         assertNull(Hystrix.getCurrentThreadExecutingCommand());
     }
 
-    @Test
+    @Test(timeout = 2000L)
     public void testInsideHystrixSemaphoreObserve() throws Exception {
 
         HystrixCommand<Boolean> command = new HystrixCommand<Boolean>(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("TestUtil"))
@@ -243,7 +244,7 @@ public class HystrixTest {
         assertNull(Hystrix.getCurrentThreadExecutingCommand());
     }
 
-    @Test
+    @Test(timeout = 2000L)
     public void testThreadNestedInsideHystrixSemaphore() {
 
         HystrixCommand<Boolean> command = new HystrixCommand<Boolean>(Setter
@@ -291,7 +292,7 @@ public class HystrixTest {
         assertNull(Hystrix.getCurrentThreadExecutingCommand());
     }
 
-    @Test
+    @Test(timeout = 2000L)
     public void testSemaphoreIsolatedSynchronousHystrixObservableCommand() {
         HystrixObservableCommand<Integer> observableCmd = new SynchronousObservableCommand();
 
@@ -367,7 +368,7 @@ public class HystrixTest {
 //        assertEquals(0, Hystrix.getCommandCount());
 //    }
 
-    @Test
+    @Test(timeout = 2000L)
     public void testMultipleSemaphoreObservableCommandsInFlight() throws InterruptedException {
         int NUM_COMMANDS = 50;
         List<Observable<Integer>> commands = new ArrayList<Observable<Integer>>();
@@ -411,7 +412,7 @@ public class HystrixTest {
     }
 
     //see https://github.com/Netflix/Hystrix/issues/280
-    @Test
+    @Test(timeout = 2000L)
     public void testResetCommandProperties() {
         HystrixCommand<Boolean> cmd1 = new ResettableCommand(100, 1, 10);
         assertEquals(100L, (long) cmd1.getProperties().executionTimeoutInMilliseconds().get());

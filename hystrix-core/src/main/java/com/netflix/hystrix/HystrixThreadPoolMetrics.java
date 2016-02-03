@@ -60,7 +60,7 @@ public class HystrixThreadPoolMetrics extends HystrixMetrics {
      *            Pass-thru to {@link HystrixThreadPoolMetrics} instance on first time when constructed
      * @return {@link HystrixThreadPoolMetrics}
      */
-    public static HystrixThreadPoolMetrics getInstance(HystrixThreadPoolKey key, ThreadPoolExecutor threadPool, HystrixThreadPoolProperties properties) {
+    public static HystrixThreadPoolMetrics getInstance(HystrixThreadPoolKey key, SemaphoreControlledThreadPoolExecutor threadPool, HystrixThreadPoolProperties properties) {
         // attempt to retrieve from cache first
         HystrixThreadPoolMetrics threadPoolMetrics = metrics.get(key.name());
         if (threadPoolMetrics != null) {
@@ -134,7 +134,7 @@ public class HystrixThreadPoolMetrics extends HystrixMetrics {
     }
 
     private final HystrixThreadPoolKey threadPoolKey;
-    private final ThreadPoolExecutor threadPool;
+    private final SemaphoreControlledThreadPoolExecutor threadPool;
     private final HystrixThreadPoolProperties properties;
 
     private final AtomicInteger concurrentExecutionCount = new AtomicInteger();
@@ -143,7 +143,7 @@ public class HystrixThreadPoolMetrics extends HystrixMetrics {
     private final CumulativeThreadPoolEventCounterStream cumulativeCounterStream;
     private final RollingThreadPoolMaxConcurrencyStream rollingThreadPoolMaxConcurrencyStream;
 
-    private HystrixThreadPoolMetrics(HystrixThreadPoolKey threadPoolKey, ThreadPoolExecutor threadPool, HystrixThreadPoolProperties properties) {
+    private HystrixThreadPoolMetrics(HystrixThreadPoolKey threadPoolKey, SemaphoreControlledThreadPoolExecutor threadPool, HystrixThreadPoolProperties properties) {
         super(null);
         this.threadPoolKey = threadPoolKey;
         this.threadPool = threadPool;
@@ -159,7 +159,7 @@ public class HystrixThreadPoolMetrics extends HystrixMetrics {
      *
      * @return ThreadPoolExecutor
      */
-    public ThreadPoolExecutor getThreadPool() {
+    public SemaphoreControlledThreadPoolExecutor getThreadPool() {
         return threadPool;
     }
 

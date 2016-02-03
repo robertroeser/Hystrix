@@ -15,27 +15,26 @@
  */
 package com.netflix.hystrix;
 
+import com.netflix.hystrix.HystrixThreadPool.Factory;
+import com.netflix.hystrix.strategy.HystrixPlugins;
+import com.netflix.hystrix.strategy.concurrency.HystrixContextScheduler;
+import com.netflix.hystrix.strategy.metrics.HystrixMetricsPublisher;
+import com.netflix.hystrix.strategy.metrics.HystrixMetricsPublisherFactory;
+import com.netflix.hystrix.strategy.metrics.HystrixMetricsPublisherThreadPool;
+import org.junit.Before;
+import org.junit.Test;
+import rx.Scheduler;
+import rx.functions.Action0;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.hamcrest.core.Is.is;
-
-import com.netflix.hystrix.HystrixThreadPool.Factory;
-import com.netflix.hystrix.strategy.HystrixPlugins;
-import com.netflix.hystrix.strategy.concurrency.*;
-import com.netflix.hystrix.strategy.metrics.HystrixMetricsPublisher;
-import com.netflix.hystrix.strategy.metrics.HystrixMetricsPublisherFactory;
-import com.netflix.hystrix.strategy.metrics.HystrixMetricsPublisherThreadPool;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import rx.Scheduler;
-import rx.functions.Action0;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class HystrixThreadPoolTest {
     @Before
@@ -113,7 +112,7 @@ public class HystrixThreadPoolTest {
         HystrixMetricsPublisherThreadPoolContainer hystrixMetricsPublisherThreadPool =
                 (HystrixMetricsPublisherThreadPoolContainer)HystrixMetricsPublisherFactory
                         .createOrRetrievePublisherForThreadPool(threadPoolKey, null, null);
-        ThreadPoolExecutor threadPoolExecutor = hystrixMetricsPublisherThreadPool.getHystrixThreadPoolMetrics().getThreadPool();
+        SemaphoreControlledThreadPoolExecutor threadPoolExecutor = hystrixMetricsPublisherThreadPool.getHystrixThreadPoolMetrics().getThreadPool();
 
         //assert that both HystrixThreadPools share the same ThreadPoolExecutor as the one in HystrixMetricsPublisherThreadPool
         assertTrue(threadPoolExecutor.equals(poolOne.getExecutor()) && threadPoolExecutor.equals(poolTwo.getExecutor()));

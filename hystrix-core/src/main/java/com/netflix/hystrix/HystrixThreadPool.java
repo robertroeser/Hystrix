@@ -159,7 +159,7 @@ public interface HystrixThreadPool {
     /* package */static class HystrixThreadPoolDefault implements HystrixThreadPool {
         private final HystrixThreadPoolProperties properties;
         private final BlockingQueue<Runnable> queue;
-        private final ThreadPoolExecutor threadPool;
+        private final SemaphoreControlledThreadPoolExecutor threadPool;
         private final HystrixThreadPoolMetrics metrics;
         private final int queueSize;
 
@@ -179,7 +179,7 @@ public interface HystrixThreadPool {
         }
 
         @Override
-        public ThreadPoolExecutor getExecutor() {
+        public SemaphoreControlledThreadPoolExecutor getExecutor() {
             touchConfig();
             return threadPool;
         }
@@ -204,9 +204,9 @@ public interface HystrixThreadPool {
         // allow us to change things via fast-properties by setting it each time
         private void touchConfig() {
             final int dynamicCoreSize = properties.coreSize().get();
-            threadPool.setCorePoolSize(dynamicCoreSize);
-            threadPool.setMaximumPoolSize(dynamicCoreSize); // we always want maxSize the same as coreSize, we are not using a dynamically resizing pool
-            threadPool.setKeepAliveTime(properties.keepAliveTimeMinutes().get(), TimeUnit.MINUTES); // this doesn't really matter since we're not resizing
+            threadPool.setMaxConcurrent(dynamicCoreSize);
+            //threadPool.setMaximumPoolSize(dynamicCoreSize); // we always want maxSize the same as coreSize, we are not using a dynamically resizing pool
+            //threadPool.setKeepAliveTime(properties.keepAliveTimeMinutes().get(), TimeUnit.MINUTES); // this doesn't really matter since we're not resizing
         }
 
         @Override
