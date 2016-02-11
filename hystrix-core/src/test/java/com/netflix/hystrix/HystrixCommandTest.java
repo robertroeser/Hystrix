@@ -3031,6 +3031,7 @@ public class HystrixCommandTest extends CommonHystrixCommandTests<TestHystrixCom
         assertFalse(cmd.hasBeenInterrupted());
     }
 
+    
     @Test
     public void testChainedCommand() {
         class SubCommand extends TestHystrixCommand<Integer> {

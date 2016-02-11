@@ -18,7 +18,7 @@ package com.netflix.hystrix.strategy.concurrency;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixThreadPool;
 import com.netflix.hystrix.HystrixThreadPoolKey;
-import com.netflix.hystrix.SemaphoreControlledThreadPoolExecutor;
+import com.netflix.hystrix.concurrent.SharedCachingExecutorService;
 import com.netflix.hystrix.strategy.HystrixPlugins;
 import com.netflix.hystrix.strategy.properties.HystrixProperty;
 import com.netflix.hystrix.util.PlatformSpecific;
@@ -71,7 +71,7 @@ public abstract class HystrixConcurrencyStrategy {
      *            {@code BlockingQueue<Runnable>} as provided by {@link #getBlockingQueue(int)}
      * @return instance of {@link ThreadPoolExecutor}
      */
-    public SemaphoreControlledThreadPoolExecutor getThreadPool(final HystrixThreadPoolKey threadPoolKey, HystrixProperty<Integer> corePoolSize, HystrixProperty<Integer> maximumPoolSize, HystrixProperty<Integer> keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
+    public SharedCachingExecutorService getThreadPool(final HystrixThreadPoolKey threadPoolKey, HystrixProperty<Integer> corePoolSize, HystrixProperty<Integer> maximumPoolSize, HystrixProperty<Integer> keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
         ThreadFactory threadFactory = null;
         if (!PlatformSpecific.isAppEngine()) {
             threadFactory = new ThreadFactory() {
@@ -88,7 +88,7 @@ public abstract class HystrixConcurrencyStrategy {
         } else {
             threadFactory = PlatformSpecific.getAppEngineThreadFactory();
         }
-        return new SemaphoreControlledThreadPoolExecutor(threadPoolKey.name(), maximumPoolSize.get());
+        return new SharedCachingExecutorService(threadPoolKey.name(), corePoolSize.get(), maximumPoolSize.get());
 
 //        return new SemaphoreControlledThreadPoolExecutor(corePoolSize.get(), maximumPoolSize.get(), keepAliveTime.get(), unit, workQueue, threadFactory);
     }

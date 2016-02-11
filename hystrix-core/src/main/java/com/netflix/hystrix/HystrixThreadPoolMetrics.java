@@ -15,10 +15,11 @@
  */
 package com.netflix.hystrix;
 
+import com.netflix.hystrix.concurrent.SharedCachingExecutorService;
 import com.netflix.hystrix.metric.HystrixCommandCompletion;
 import com.netflix.hystrix.metric.consumer.CumulativeThreadPoolEventCounterStream;
-import com.netflix.hystrix.metric.consumer.RollingThreadPoolMaxConcurrencyStream;
 import com.netflix.hystrix.metric.consumer.RollingThreadPoolEventCounterStream;
+import com.netflix.hystrix.metric.consumer.RollingThreadPoolMaxConcurrencyStream;
 import com.netflix.hystrix.util.HystrixRollingNumberEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,7 @@ public class HystrixThreadPoolMetrics extends HystrixMetrics {
      *            Pass-thru to {@link HystrixThreadPoolMetrics} instance on first time when constructed
      * @return {@link HystrixThreadPoolMetrics}
      */
-    public static HystrixThreadPoolMetrics getInstance(HystrixThreadPoolKey key, SemaphoreControlledThreadPoolExecutor threadPool, HystrixThreadPoolProperties properties) {
+    public static HystrixThreadPoolMetrics getInstance(HystrixThreadPoolKey key, SharedCachingExecutorService threadPool, HystrixThreadPoolProperties properties) {
         // attempt to retrieve from cache first
         HystrixThreadPoolMetrics threadPoolMetrics = metrics.get(key.name());
         if (threadPoolMetrics != null) {
@@ -134,7 +135,7 @@ public class HystrixThreadPoolMetrics extends HystrixMetrics {
     }
 
     private final HystrixThreadPoolKey threadPoolKey;
-    private final SemaphoreControlledThreadPoolExecutor threadPool;
+    private final SharedCachingExecutorService threadPool;
     private final HystrixThreadPoolProperties properties;
 
     private final AtomicInteger concurrentExecutionCount = new AtomicInteger();
@@ -143,7 +144,7 @@ public class HystrixThreadPoolMetrics extends HystrixMetrics {
     private final CumulativeThreadPoolEventCounterStream cumulativeCounterStream;
     private final RollingThreadPoolMaxConcurrencyStream rollingThreadPoolMaxConcurrencyStream;
 
-    private HystrixThreadPoolMetrics(HystrixThreadPoolKey threadPoolKey, SemaphoreControlledThreadPoolExecutor threadPool, HystrixThreadPoolProperties properties) {
+    private HystrixThreadPoolMetrics(HystrixThreadPoolKey threadPoolKey, SharedCachingExecutorService threadPool, HystrixThreadPoolProperties properties) {
         super(null);
         this.threadPoolKey = threadPoolKey;
         this.threadPool = threadPool;
@@ -159,7 +160,7 @@ public class HystrixThreadPoolMetrics extends HystrixMetrics {
      *
      * @return ThreadPoolExecutor
      */
-    public SemaphoreControlledThreadPoolExecutor getThreadPool() {
+    public SharedCachingExecutorService getThreadPool() {
         return threadPool;
     }
 
@@ -205,7 +206,7 @@ public class HystrixThreadPoolMetrics extends HystrixMetrics {
      * @return Number
      */
     public Number getCurrentCorePoolSize() {
-        return threadPool.getCorePoolSize();
+        return threadPool.getMaxConcurrent();
     }
 
     /**
@@ -214,7 +215,7 @@ public class HystrixThreadPoolMetrics extends HystrixMetrics {
      * @return Number
      */
     public Number getCurrentLargestPoolSize() {
-        return threadPool.getLargestPoolSize();
+        return threadPool.getQueueDepth();
     }
 
     /**
@@ -223,7 +224,7 @@ public class HystrixThreadPoolMetrics extends HystrixMetrics {
      * @return Number
      */
     public Number getCurrentMaximumPoolSize() {
-        return threadPool.getMaximumPoolSize();
+        return threadPool.getMaxConcurrent();
     }
 
     /**
@@ -232,7 +233,7 @@ public class HystrixThreadPoolMetrics extends HystrixMetrics {
      * @return Number
      */
     public Number getCurrentPoolSize() {
-        return threadPool.getPoolSize();
+        return threadPool.getQueueDepth();
     }
 
     /**

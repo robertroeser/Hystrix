@@ -16,6 +16,7 @@
 package com.netflix.hystrix;
 
 import com.netflix.hystrix.HystrixThreadPool.Factory;
+import com.netflix.hystrix.concurrent.SharedCachingExecutorService;
 import com.netflix.hystrix.strategy.HystrixPlugins;
 import com.netflix.hystrix.strategy.concurrency.HystrixContextScheduler;
 import com.netflix.hystrix.strategy.metrics.HystrixMetricsPublisher;
@@ -112,7 +113,7 @@ public class HystrixThreadPoolTest {
         HystrixMetricsPublisherThreadPoolContainer hystrixMetricsPublisherThreadPool =
                 (HystrixMetricsPublisherThreadPoolContainer)HystrixMetricsPublisherFactory
                         .createOrRetrievePublisherForThreadPool(threadPoolKey, null, null);
-        SemaphoreControlledThreadPoolExecutor threadPoolExecutor = hystrixMetricsPublisherThreadPool.getHystrixThreadPoolMetrics().getThreadPool();
+        SharedCachingExecutorService threadPoolExecutor = hystrixMetricsPublisherThreadPool.getHystrixThreadPoolMetrics().getThreadPool();
 
         //assert that both HystrixThreadPools share the same ThreadPoolExecutor as the one in HystrixMetricsPublisherThreadPool
         assertTrue(threadPoolExecutor.equals(poolOne.getExecutor()) && threadPoolExecutor.equals(poolTwo.getExecutor()));

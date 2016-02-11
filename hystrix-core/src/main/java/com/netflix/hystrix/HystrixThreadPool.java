@@ -15,6 +15,7 @@
  */
 package com.netflix.hystrix;
 
+import com.netflix.hystrix.concurrent.SharedCachingExecutorService;
 import com.netflix.hystrix.strategy.HystrixPlugins;
 import com.netflix.hystrix.strategy.concurrency.HystrixConcurrencyStrategy;
 import com.netflix.hystrix.strategy.concurrency.HystrixContextScheduler;
@@ -159,7 +160,7 @@ public interface HystrixThreadPool {
     /* package */static class HystrixThreadPoolDefault implements HystrixThreadPool {
         private final HystrixThreadPoolProperties properties;
         private final BlockingQueue<Runnable> queue;
-        private final SemaphoreControlledThreadPoolExecutor threadPool;
+        private final SharedCachingExecutorService threadPool;
         private final HystrixThreadPoolMetrics metrics;
         private final int queueSize;
 
@@ -179,7 +180,7 @@ public interface HystrixThreadPool {
         }
 
         @Override
-        public SemaphoreControlledThreadPoolExecutor getExecutor() {
+        public SharedCachingExecutorService getExecutor() {
             touchConfig();
             return threadPool;
         }
